@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Preview, PreviewState } from '@creatomate/preview';
 import { useWindowWidth } from '../utility/useWindowWidth';
-import { SettingsPanel } from './SettingsPanel';
+import JsonEditor from './JsonEditor';
 
 const App: React.FC = () => {
   // React Hook to update the component when the window width changes
@@ -18,6 +18,9 @@ const App: React.FC = () => {
   const [isReady, setIsReady] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [currentState, setCurrentState] = useState<PreviewState>();
+  
+  // JSON state
+  const [jsonData, setJsonData] = useState<any>(defaultJson);
 
   // This sets up the video player in the provided HTML DIV element
   const setUpPreview = (htmlElement: HTMLDivElement) => {
@@ -29,49 +32,44 @@ const App: React.FC = () => {
     // Initialize a preview
     const preview = new Preview(htmlElement, 'player', process.env.NEXT_PUBLIC_CREATOMATE_PUBLIC_TOKEN!);
 
-    // Once the SDK is ready, load a template from our project
-    // Once the SDK is ready, load the source directly from JSON
-preview.onReady = async () => {
-  await preview.setSource({
-    "id": "your-source-id",
-    "width": 1920,
-    "height": 1080,
-    "duration": 30,
-    "elements": [
-      {
-        "type": "composition",
-        "id": "main-composition",
-        "elements": [
-          {
-            "type": "text",
-            "id": "text-element",
-            "text": "Your dynamic text here",
-            "x": "50%",
-            "y": "50%"
-          }
-        ]
+    // Once the SDK is ready, set the initial JSON source
+    preview.onReady = async () => {
+      try {
+        await preview.setSource(jsonData);
+        setIsReady(true);
+      } catch (error) {
+        console.error('Error setting initial JSON source:', error);
       }
-    ]
-  });
-  
-  setIsReady(true);
-};
+    };
 
-preview.onLoad = () => {
-  setIsLoading(true);
-};
+    preview.onLoad = () => {
+      setIsLoading(true);
+    };
 
-preview.onLoadComplete = () => {
-  setIsLoading(false);
-};
+    preview.onLoadComplete = () => {
+      setIsLoading(false);
+    };
 
-// Listen for state changes of the preview
-preview.onStateChange = (state) => {
-  setCurrentState(state);
-  setVideoAspectRatio(state.width / state.height);
-};
+    // Listen for state changes of the preview
+    preview.onStateChange = (state) => {
+      setCurrentState(state);
+      setVideoAspectRatio(state.width / state.height);
+    };
 
-previewRef.current = preview;
+    previewRef.current = preview;
+  };
+
+  // Apply JSON to preview
+  const applyJson = async (json: any) => {
+    if (previewRef.current && isReady) {
+      setIsLoading(true);
+      try {
+        await previewRef.current.setSource(json);
+      } catch (error) {
+        console.error('Error applying JSON:', error);
+      }
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -93,7 +91,11 @@ previewRef.current = preview;
       <Panel>
         {isReady && (
           <PanelContent id="panel">
-            <SettingsPanel preview={previewRef.current!} currentState={currentState} />
+            <JsonEditor 
+              jsonData={jsonData} 
+              setJsonData={setJsonData} 
+              applyJson={() => applyJson(jsonData)}
+            />
           </PanelContent>
         )}
       </Panel>
@@ -101,6 +103,35 @@ previewRef.current = preview;
       {isLoading && <LoadIndicator>Loading...</LoadIndicator>}
     </Component>
   );
+};
+
+// Default JSON - replace with your own structure
+const defaultJson = {
+  "format": "mp4",
+  "width": 1280,
+  "height": 720,
+  "elements": [
+    {
+      "type": "video",
+      "source": "https://creatomate-static.s3.amazonaws.com/demo/video1.mp4",
+      "duration": 5
+    },
+    {
+      "type": "text",
+      "text": "Your Text Here",
+      "x": "50%",
+      "y": "50%",
+      "width": "80%",
+      "height": "auto",
+      "color": "#ffffff",
+      "background_color": "rgba(0, 0, 0, 0.5)",
+      "background_padding": "0.5em",
+      "font_family": "Roboto",
+      "font_size": "5em",
+      "font_weight": "bold",
+      "text_alignment": "center"
+    }
+  ]
 };
 
 export default App;

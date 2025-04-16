@@ -1,17 +1,21 @@
+import type { NextPage } from 'next';
 import Head from 'next/head';
-import dynamic from 'next/dynamic';
+import App from '../components/App';
 
-const App = dynamic(() => import('../components/App'), { ssr: false });
-
-export default function Home() {
+const Home: NextPage = () => {
   return (
     <div>
       <Head>
-        <title>Video Preview Demo</title>
-        <link rel='icon' href='/favicon.ico' />
+        <title>Creatomate JSON Preview</title>
+        <meta name="description" content="Preview videos using Creatomate and JSON" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <App />
+      <main>
+        <App />
+      </main>
     </div>
   );
-}
+};
+
+export default Home;
