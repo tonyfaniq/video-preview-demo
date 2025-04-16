@@ -30,26 +30,48 @@ const App: React.FC = () => {
     const preview = new Preview(htmlElement, 'player', process.env.NEXT_PUBLIC_CREATOMATE_PUBLIC_TOKEN!);
 
     // Once the SDK is ready, load a template from our project
-    preview.onReady = async () => {
-      await preview.loadTemplate(process.env.NEXT_PUBLIC_TEMPLATE_ID!);
-      setIsReady(true);
-    };
+    // Once the SDK is ready, load the source directly from JSON
+preview.onReady = async () => {
+  await preview.setSource({
+    "id": "your-source-id",
+    "width": 1920,
+    "height": 1080,
+    "duration": 30,
+    "elements": [
+      {
+        "type": "composition",
+        "id": "main-composition",
+        "elements": [
+          {
+            "type": "text",
+            "id": "text-element",
+            "text": "Your dynamic text here",
+            "x": "50%",
+            "y": "50%"
+          }
+        ]
+      }
+    ]
+  });
+  
+  setIsReady(true);
+};
 
-    preview.onLoad = () => {
-      setIsLoading(true);
-    };
+preview.onLoad = () => {
+  setIsLoading(true);
+};
 
-    preview.onLoadComplete = () => {
-      setIsLoading(false);
-    };
+preview.onLoadComplete = () => {
+  setIsLoading(false);
+};
 
-    // Listen for state changes of the preview
-    preview.onStateChange = (state) => {
-      setCurrentState(state);
-      setVideoAspectRatio(state.width / state.height);
-    };
+// Listen for state changes of the preview
+preview.onStateChange = (state) => {
+  setCurrentState(state);
+  setVideoAspectRatio(state.width / state.height);
+};
 
-    previewRef.current = preview;
+previewRef.current = preview;
   };
 
   return (
