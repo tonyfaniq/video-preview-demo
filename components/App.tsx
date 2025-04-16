@@ -88,6 +88,7 @@ const Component = styled.div`
   height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #f5f7fa;
 
   @media (min-width: 768px) {
     flex-direction: row;
@@ -99,7 +100,7 @@ const Wrapper = styled.div`
 
   @media (min-width: 768px) {
     flex: 1;
-    padding: 20px;
+    padding: 2rem;
   }
 `;
 
@@ -109,19 +110,22 @@ const Container = styled.div`
   max-width: 720px;
   max-height: 720px;
   margin: auto;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 `;
 
 const Panel = styled.div`
   flex: 1;
   position: relative;
   background: #fff;
-  box-shadow: rgba(0, 0, 0, 0.1) 0 6px 15px 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
 
   @media (min-width: 768px) {
     flex: initial;
-    margin: 50px;
-    width: 400px;
-    border-radius: 15px;
+    margin: 2rem;
+    width: 420px;
+    border-radius: 16px;
   }
 `;
 
@@ -131,7 +135,7 @@ const PanelContent = styled.div`
   top: 0;
   width: 100%;
   height: 100%;
-  padding: 20px;
+  padding: 1.5rem;
   overflow: auto;
 `;
 
@@ -140,15 +144,35 @@ const LoadIndicator = styled.div`
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  padding: 5px 15px;
+  padding: 0.6rem 1.2rem;
   background: #fff;
-  box-shadow: rgba(0, 0, 0, 0.1) 0 6px 15px 0;
-  border-radius: 5px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border-radius: 50px;
   font-size: 15px;
   font-weight: 600;
+  color: #4a5568;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &:before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border: 2px solid #e2e8f0;
+    border-top-color: #4a5568;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
 
   @media (min-width: 768px) {
     top: 50px;
-    left: calc((100% - 400px) / 2);
+    left: calc((100% - 420px) / 2);
   }
 `;
